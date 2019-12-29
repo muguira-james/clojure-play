@@ -40,6 +40,13 @@
                         (println sym)
                         (recur (rest col)))))
 
+(defn print-all-names [p]
+  (if (not (empty? p))
+    (let [
+          name (get (first p) :name)
+          sym (get (first p) :symbol)]
+      (println (str "symbol - " sym "\tName: " name))
+      (recur (rest p)))))
 
 (defn get-closing-col [ds]
   (i/sel ds :cols 4))
@@ -62,6 +69,9 @@
 (defn get-symbol-from-portfolio [col]
   (get (first col) :symbol))
 
+(defn get-company-name-from-portfolio [p]
+  (get (first p) :name))
+
 (defn chart-all-symbols [col] 
   (if (not (empty? col))
     (let [
@@ -78,6 +88,23 @@
       (recur (rest col)))))
 
 
+(defn chart-all-symbols1 [col] 
+  (if (not (empty? col))
+    (let [
+          sym (get-symbol-from-portfolio col)
+          ds (fetch/get-price-data sym)
+          close-col (get-closing-col ds)]
+      (do
+        (println sym)
+        (i/view
+         
+          (plt/time-series-plot (range 100) close-col :title sym))
+          
+         
+        (recur (rest col))))))
+
+
+
 
 (defn -main
   "read the file daily.csv, create a chart and print the file contents"
@@ -85,8 +112,9 @@
   (do
 
     (read-portfolio "resources/fins.edn")
-    (chart-all-symbols @portfolio)
-    (print-all-symbols @portfolio)))
+    ;;(chart-all-symbols @portfolio)
+    (print-all-names @portfolio)
+))
 
 
 ;;(defn create-chart-1 [symbol periods]
