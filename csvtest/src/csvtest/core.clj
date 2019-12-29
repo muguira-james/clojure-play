@@ -10,22 +10,25 @@
              [clojure.edn :as edn]))
 ;;
 ;;
-;; read data in from a file in the root of the project
+;; read data in from a file, called daily.csv, in the root of the project
 ;;
 ;; or use get-price-file symbol
 ;;
 (def df (io/read-dataset "daily.csv" :header true))
 ;;
-;; visualize moody's
+;; examples of how to use incanter slicing
 ;;
 (def y (i/sel df :cols 4))  ;; y == close
 (def x (range 100))         ;; x == 1 - 100
-
-;;
 (i/$ [:timestamp :close] df)
 
+;;
+;; create and manage a portfolio
+;;
 (def portfolio (atom []))
-
+;;
+;; read the portfolio names and symbols from a filename
+;;
 (defn read-portfolio [filename]
   (reset! portfolio
           (edn/read-string (slurp filename))))
@@ -39,7 +42,9 @@
                         sym (get (first col) :symbol)]
                         (println sym)
                         (recur (rest col)))))
-
+;;
+;; pretty print all the symbols and company names
+;;
 (defn print-all-names [p]
   (if (not (empty? p))
     (let [
@@ -48,14 +53,22 @@
       (println (str "symbol - " sym "\tName: " name))
       (recur (rest p)))))
 
+;;
+;; pop the "close" column off the dataset
+;;
 (defn get-closing-col [ds]
   (i/sel ds :cols 4))
-
+;;
+;; fetch the price dataset from alpha vantage
+;;  return the close column
+;;
 (defn get-closing-price [symbol]
   (get-closing-col (fetch/get-price-data symbol)))
-
-
-
+;;
+;; create a chart: price and moving average overlay
+;;
+;; inputs: list of closing prices, number of periods for the moving-average
+;;
 (defn create-chart [closing-col periods]
    (i/view
      (plt/add-lines
@@ -65,13 +78,19 @@
        
       (range 100)
       (jm/moving-average closing-col periods))))
-
+;;
+;; pop the symbol off the portfolio entry
+;;
 (defn get-symbol-from-portfolio [col]
   (get (first col) :symbol))
-
+;;
+;; pop company name off portfolio entry
+;;
 (defn get-company-name-from-portfolio [p]
   (get (first p) :name))
-
+;;
+;; loop creating charts for all portfolio symbols
+;;
 (defn chart-all-symbols [col] 
   (if (not (empty? col))
     (let [
@@ -87,7 +106,9 @@
           (jm/moving-average close-col 4))))
       (recur (rest col)))))
 
-
+;;
+;; loop creating time series chart for all portfolio symbols
+;;
 (defn chart-all-symbols1 [col] 
   (if (not (empty? col))
     (let [
@@ -103,9 +124,9 @@
          
         (recur (rest col))))))
 
-
-
-
+;;
+;; main func
+;;
 (defn -main
   "read the file daily.csv, create a chart and print the file contents"
   [& args]
