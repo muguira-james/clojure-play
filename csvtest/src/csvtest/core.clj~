@@ -9,7 +9,7 @@
 ;;
 (def TIME-SERIES-DAILY 'TIME_SERIES_DAILY)
 (def data-type 'csv)
-(def apikey 'WO3506PATLTSXPJB)
+(def apikey 'foo)
 ;;
 ;; create a URL
 ;;

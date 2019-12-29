@@ -1,47 +1,17 @@
 (ns csvtest.core
-  (:gen-class))
+  (:require [incanter.core :as i]
+             [incanter.io :as io]
+             [incanter.stats :as istat]
+             [incanter.charts :as plt]
+             [clj-time.core :as clj-time]
+             [clj-time.format :as time-format]
+             [csvtest.fetch :as fetch]
+             [csvtest.jmath :as jm]
+             [clojure.edn :as edn]))
+;;
+;;
 
-(require '[incanter.core :as i])
-(require '[incanter.io :as io])
-(require '[incanter.stats :as istat])
-(require '[incanter.charts :as plt])
 
-;;
-(def TIME-SERIES-DAILY 'TIME_SERIES_DAILY)
-(def data-type 'csv)
-(def apikey 'foo)
-;;
-;; create a URL
-;;
-(defn alpha-vantage-url
-  "return the url for alpha-vanntage"
-  [symbol]
-  (str "https://www.alphavantage.co/query?function="
-       TIME-SERIES-DAILY "&symbol=" symbol "&datatype=" data-type "&apikey=" apikey))
-;;
-;; get price data from a file
-;;
-(defn get-price-file
-  "get price data from a file: daily.csv, in the root of the project"
-  [file-name]
-  (io/read-dataset file-name :header true))
-;;
-;; get price data from alpha-vantage
-;;
-(defn get-price-data
-  "get data for a symbol"
-  [symbol]
-  (io/read-dataset (alpha-vantage-url symbol) :header true))
-;;
-;;
-(defn moving-average [lst window-size]
-  (loop [ sm []
-         lsti (seq lst)
-         win-size window-size
-         ]
-    (if (empty? lsti)
-      sm
-      (recur (conj sm (istat/mean (first (partition win-size 1 lsti)))) (rest lsti) win-size))))
 ;;
 ;;
 ;;
@@ -55,21 +25,53 @@
 ;;
 (def y (i/sel df :cols 4))  ;; y == close
 (def x (range 100))         ;; x == 1 - 100
-(i/view
- (plt/add-lines
-  (plt/time-series-plot (range 100) (moving-average (i/sel df :cols 4) 3))
-  (range 100)
-  (i/sel df :cols 4)))
+
 ;;
-;; select a column
-(i/$ :open df)
-;;
-;; select 2 columns
 (i/$ [:timestamp :close] df)
+
+(def portfolio (atom []))
+
+(defn read-portfolio [filename]
+  (reset! portfolio
+          (edn/read-string (slurp filename))))
+;;
+;; loop through the portfolio and print the symbols
+;;
+(defn print-all-symbols [col] 
+                (if (not (empty? col))
+                  (let [
+                        sym (get (first col) :symbol)]
+                        (println sym)
+                        (recur (rest col)))))
+
+
+(defn create-chart [symbol periods]
+   (i/view
+     (plt/add-lines
+      (plt/time-series-plot
+       (range 100)
+       (jm/moving-average (i/sel df :cols 4) 3))
+      (range 100)
+      (i/sel df :cols 4))))
+
+
+(defn chart-all-symbols [col] 
+                (if (not (empty? col))
+                  (let [
+                        sym (get (first col) :symbol)]
+                    (do
+                      (println sym)
+                      (create-chart sym 3))
+                                   
+                    (recur (rest col)))))
 
 
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "read the file daily.csv, create a chart and print the file contents"
   [& args]
-  (println df))
+  (do
+
+    (read-portfolio "resources/fins.edn")
+    (chart-all-symbols @portfolio)
+    (print-all-symbols @portfolio)))
