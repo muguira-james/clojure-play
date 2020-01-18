@@ -1,0 +1,10 @@
+[
+ {:name "Berkshire Hathaway Inc. Class B" :symbol "BRKB" }
+ {:name "Broadridge Financial Solutions"  :symbol "BR" }
+ {:name "Moody's Corporation"             :symbol "MCO" }
+ {:name "Mastercard Inc"                  :symbol "MA" }
+ {:name "Bank of America Corp"            :symbol "BAC" }
+ {:name "American Express Company"        :symbol "AXP" }
+ {:name "Visa Inc"                        :symbol "V" }
+ {:name "JPMorgan Chase & Co."            :symbol "JPM" }
+ ]
