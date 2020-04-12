@@ -1,8 +1,10 @@
-# noob
+# trawler
 
-A Clojure app to ... well, that part is up to you.
+Read RSS feeds from the edn file and display titles on the stdout
 
 ## Usage
+
+lein run
 
 FIXME
 # clojure-trawler

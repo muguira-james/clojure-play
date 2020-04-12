@@ -1,3 +1,8 @@
+;;
+;; Trawl RSS feeds
+;;
+;; Using edn based feeds, trawl each feed and return some content.
+;;
 (ns noob.core
   (:gen-class))
 
@@ -16,7 +21,7 @@
 ;; read-end is experimentation with reading one from disk
 
 
-;; 
+;;
 ;; set up the extensible data notation read (edn)
 (def feeds (atom []))
 ;;
@@ -28,7 +33,7 @@
 ;;
 ;; This is an example of what ann "EDN" file might look like
 ;; save a copy of the config to a file in resources dir
-(defn save-edn 
+(defn save-edn
   []
   (spit "resources/data.edn" (pr-str [{:source "cnn" :link "http://rss.cnn.com/rss/money_news_international.rss"}])))
 ;;
@@ -49,7 +54,7 @@
 (def cnn '({:source "hello", :link "bye"} {:source "hello2", :link "bye2"}))
 
 
-;; first get the rss feed in a lazy-var.  
+;; first get the rss feed in a lazy-var.
 (def rss (rss/parse-feed (str "http://rss.cnn.com/rss/money_news_international.rss")))
 ;;
 ;; move over to point to just the entries in the RSS feed
@@ -107,16 +112,16 @@
       (pop-link m)
       (recur (rest m)))))
 
-        
+
 ;;
 ;; print news in the config file
 (defn print-4
   [col]
   (if (not (empty? col))
-    (do 
+    (do
       (pall-title (get (rss/parse-feed (pop-link (first col))) :entries))
       (recur (rest col)))))
-        
+
 ;;
 ;; pretty print all new in "source: title" format
 ;;
@@ -124,13 +129,13 @@
 ;;
 (defn print-all-news [col]
   (if (not (empty? col))
-    (let 
+    (let
       [source (get (first col) :source)
        link (pop-link (first col))]
       (do
         (pall-title-2 source (get (rss/parse-feed link) :entries))
         (recur (rest col))))))
-  
+
 ;;---------------------------------------------------------
 ;;
 ;; the main just "runs" the app
