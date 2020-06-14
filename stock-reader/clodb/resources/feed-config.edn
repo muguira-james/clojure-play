@@ -1,0 +1,5 @@
+[
+ {:source "seeking alpha" :database "market_news?useSSL=false"  :link "https://seekingalpha.com/market_currents.xml"}
+ ;;  {:source "Seeking Alpha" :section "stock news" :shortName "seeking" :link "https://seekingalpha.com/api/sa/combined/TSLA.xml"}
+ 
+ ]

@@ -1,0 +1,19 @@
+version: "3.1"
+
+volumes:
+  DBTestStorage:
+
+services:  
+
+  seeking-bend:
+    image: mysql:5.7
+    
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_USER: magoo
+      MYSQL_PASSWORD: ipoet
+      MYSQL_ROOT_PASSWORD: t1y2p3e4
+      MYSQL_DATABASE: seeking
+    volumes:
+        - DBTestStorage:/DBTestStorage
