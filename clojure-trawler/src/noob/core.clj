@@ -28,7 +28,7 @@
 ;; pull in the feeds from the file: fileName
 (defn init-feeds [fileName]
   (reset! feeds
-    (edn/read-string (slurp fileName))))
+          (edn/read-string (slurp fileName))))
 ;;
 ;;
 ;; This is an example of what ann "EDN" file might look like
