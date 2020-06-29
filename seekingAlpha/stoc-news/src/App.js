@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import NewsCard from './components/NewsCard'
 
 import EditPortfolio from './components/EditPortfolio'
+import Sentiment from './components/Sentiment'
 
 const GET_NEWS = gql`
 query {
@@ -17,7 +18,39 @@ query {
 }
 `;
 
+const GET_SENTS = gql`
+  query {
+    getsents{
+      title
+      link
+    }
+  }
+  
 
+`;
+
+function SentimentContainer() {
+  const { data, loading, error } = useQuery(GET_SENTS)
+
+  if (loading) return <div><p>data is still loading</p></div>
+  if (error) return <div><span>found network errro</span></div>
+
+  if (!data) return <p>Not found?</p>
+
+  // console.log("my data-->", data.getnews)
+  return (
+    <div>
+      {
+        data.getsents.map((item, index) => {
+          return (
+            <Sentiment key={index} title={item.title} publish_date={item.link} />
+          )
+        })
+      }
+    </div>
+    
+  )
+}
 
 function StockContainer() {
   const { data, loading, error } = useQuery(GET_NEWS)
@@ -55,7 +88,8 @@ function App() {
         break
       }
       case 2: { thing = <EditPortfolio />;  break }
-      case 3: { thing =  <p>nothing implemented yet</p>; break }
+      case 3: { thing =  <SentimentContainer />; break }
+      
     }
     return thing
 

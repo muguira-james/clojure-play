@@ -1,0 +1,21 @@
+
+###################################
+# Set this file and copy it into .env
+###################################
+#
+# use this for local testing outside of a container
+# mongoURI=mongodb://magoo:<password here>@localhost:27017/respite?authSource=admin
+#
+# use this for testing in docker-compose
+mongoURI=mongodb://magoo:< your password here>@mongodb:27017/respite?authSource=admin
+#
+# use this for testing in mongo.atlas
+# driverUserPassHost=mongodb+srv://magoo:<password here>@jam-respite-y7whg.mongodb.net
+# restPart=/respite?retryWrites=true&w=majority
+# mongoURI=mongodb+srv://magoo:<password here>@jam-respite-y7whg.mongodb.net/respite?retryWrites=true&w=majority
+#
+# this is for the salting of passwords
+SECRET=< your password here>
+# 
+# default port to listen to (localhost and docker-compose testing)
+PORT=8000 

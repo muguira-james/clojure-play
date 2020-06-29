@@ -9,10 +9,17 @@ const typeDefs = gql`
         link: String
     }
 
+    type Sents {
+        title: String
+        link: String
+    }
+
     type Query { 
         getnews: [MarketNews]
         hello: String
         answer: MarketNews
+
+        getsents: [Sents]
     }
 `;
 

@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo
+    
+    # image: muguirajames/mongojam
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile-mongo
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root 
+      - MONGO_INITDB_ROOT_PASSWORD=mysql
+      - MONGO_INITDB_DATABASE=muse
+      - DATABASE_USERNAME=magoo
+      - DATABASE_PASSWORD=q1w2e3r4t5y6
+    volumes:
+      - ./docker-scripts/:/docker-entrypoint-initdb.d
+    ports:
+      - 27017:27017
+    # volumes:
+    #   - DBTestStorage:/data
+    # command: mongod
+    # networks:
+    #   - respite-net
+
+  # backend:
+  #   image: muguirajames/backend
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-backend
+  #   ports:
+  #     - 8000:8000
+  #   networks:
+  #     - respite-net
+  #   entrypoint: ./wait-for-it.sh respite-net:27017  -- yarn start
+
+
+# volumes:
+#   DBTestStorage:
+# networks:
+#   respite-net:
