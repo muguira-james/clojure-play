@@ -1,5 +1,8 @@
 
-
+// 
+// Roll the schema and resolver into a single file.
+//
+// This uses Apollo GraphQL to present a simple backend
 
 const { ApolloServer } = require('apollo-server');
 const MongoClient = require('mongodb').MongoClient;
