@@ -11,7 +11,7 @@ import ThreadEntry from './ThreadEntry'
 
 const GET_THREAD_SPEC = gql`
 query{
-	getThreads {
+	getMissionThreads(missionId: "DCAS") {
     task
     subjectUnit
     metric
@@ -29,11 +29,11 @@ export default function ThreadContainer() {
 
     if (!data) return <p>Not found?</p>
 
-    console.log("my data-->", data.getThreads)
+    console.log("my data-->", data.getMissionThreads)
     return (
         <div>
             {
-                data.getThreads.map((item, index) => {
+                data.getMissionThreads.map((item, index) => {
 
                     console.log("--item-->", item.task)
                     return (

@@ -19,7 +19,7 @@ import ScenarioEntry from './ScenarioEntry'
 
 const GET_SCENARIO_SPEC = gql`
 query{
-	getScenarioCategories {
+	getMissionScenarioCategories(missionId: "DCAS") {
         category
         specEntries {
             title
@@ -40,11 +40,11 @@ export default function ScenarioContainer() {
 
     if (!data) return <p>Not found?</p>
 
-    console.log("my data-->", data.getScenarioCategories)
+    console.log("my data-->", data.getMissionScenarioCategories)
     return (
         <div>
             {
-                data.getScenarioCategories.map((item, index) => {
+                data.getMissionScenarioCategories.map((item, index) => {
 
                     console.log("--item-->", item.category)
                     return (

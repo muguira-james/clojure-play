@@ -13,7 +13,7 @@ import PersonEntry from './PersonEntry'
 
 const GET_PERSONNEL_SPEC = gql`
 query {
-    getPersonnel{
+    getMissionPersonnel(missionId: "DCAS"){
       name
     }
   }
@@ -28,11 +28,11 @@ export default function PersonnelContainer() {
 
     if (!data) return <p>Not found?</p>
 
-    console.log("my data-->", data.getPersonnel)
+    console.log("my data-->", data.getMissionThreads)
     return (
         <div>
             {
-                data.getPersonnel.map((item, index) => {
+                data.getMissionPersonnel.map((item, index) => {
 
                     console.log("--item-->", item.name)
                     return (

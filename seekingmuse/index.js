@@ -26,7 +26,7 @@ const typeDefs = require('./schema');
 
 const sampleData =
 {
-    "missionId": "JCAS",
+    "missionId": "DCAS",
     "scenario": [
         {
             "category": "Environment",
@@ -154,6 +154,8 @@ const sampleData =
 let resolvers = {
     Query: {
         hello: () => { return "Hello james" },
+        //
+        // return all missions
         getMissions: async () => {
 
             let ary = []
@@ -166,11 +168,16 @@ let resolvers = {
             console.log("-2->", ary)
             return ary
         },
-        getScenarioCategories: async () => {
-            
-            let Specs = db.collection('specs')
-            let mission = await Specs.findOne({ missionId: 'JCAS' })
+        //
+        // using the input missionID, get the scenario info from a missionn
+        getMissionScenarioCategories: async (root, { missionId }, context, info) => {
 
+            console.log("input-->", missionId)
+            let Specs = db.collection('specs')
+            let mission = await Specs.findOne({ missionId: missionId })
+            //
+            // NEED ERROR handling !!!
+            //
             console.log("-1-->", mission)
 
             ret = []
@@ -180,12 +187,15 @@ let resolvers = {
             })
             return ret
         },
-        getThreads: async () => {
-            
+        
+        //
+        // using the input missionId, get the threads for this mission
+        getMissionThreads: async (root, { missionId }, context, info) => {
             let retS = {}
 
+            console.log("mis id thread->", missionId)
             let Specs = db.collection('specs')
-            let mission = await Specs.findOne({ missionId: 'JCAS' })
+            let mission = await Specs.findOne({ missionId: missionId })
 
             console.log("-1-->", mission)
 
@@ -196,19 +206,24 @@ let resolvers = {
             })
             return ret
         },
-        getPersonnel: async () => {
+        //
+        // using the input person, answer the personnel for this mission
+        getMissionPersonnel: async (root, { missionId }, context, info) => {
+            
+            console.log("person -->", missionId)
             let Specs = db.collection('specs')
-            let mission = await Specs.findOne({ missionId: 'JCAS' })
+            let mission = await Specs.findOne({ missionId: missionId })
 
             console.log("-1-->", mission)
 
             ret = []
             mission.personnel.map(person => {
-                console.log("---3--->", person)
+                console.log("---3--->", person) 
                 ret.push(person)
             })
             return ret
         }
+        
     },
     Mutation: {
         setupTest: (root, args, context, info) => {
@@ -216,12 +231,32 @@ let resolvers = {
             let Specs = db.collection('specs')
             let ret = Specs.insertOne(sampleData)
             return ret
+        },
+        //
+        // add a person to a specific mission
+        addPerson: async (root, { missionId, name }, context, info) => {
+            let Specs = db.collection('specs')
+
+            let ret = await Specs.update( { missionId: missionId }, { $push: { personnel: { name: name }}} )
+            return ( { name: name } )
+        },
+        //
+        // add a complete mission
+        addMission: async (root, { missionSpec }, context, info) => {
+            let Specs = db.collection('specs')
+            
+            let js = JSON.parse(missionSpec)
+            console.log("mission-->", js, typeof(js))
+
+            try {
+                await Specs.insertOne(js)
+            } catch (err) {
+                console.log("err-->", err)
+            }
+            return js
         }
+
     }
-
-
-
-
 }
 
 
