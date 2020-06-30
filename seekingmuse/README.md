@@ -6,7 +6,7 @@
 
 This uses mongodb, without an ORM.
 
-The docker-compose file bind mounts the "docker-scripts" directory to the db container.  This dir has a simple script to establish a user and password.
+The docker-compose file bind mounts the "docker-scripts" directory to the db container.  This dir has a simple script to establish a user and password. The only login that works is "root" - magoo is messed up somehow
 
 It is run via, docker-entrypoint-initdb.d
 
