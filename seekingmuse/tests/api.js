@@ -2,8 +2,16 @@
 
 import axios from 'axios';
 
-const API_URL = 'http://localhost:4000/';
+const API_URL = 'http://localhost:4000';
 
+export const hello = variables => {
+  axios.post(API_URL, {
+    query: `
+    query {
+      hello 
+    }`, variables,
+  })
+}
 
 export const getMissions = async variables =>
   axios.post(API_URL, {
@@ -17,60 +25,166 @@ export const getMissions = async variables =>
     variables,
   });
 
-export const setupTest = async variables => 
-  axios.post(API_URL, {
-    query: `
-      setupTest {
-        missionId
+export const getMissionPersonnel = async variables =>
+  await axios({
+    url: API_URL,
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      query: `
+      query 
+      
+      ($missionId: String!) {
+        getMissionPersonnel(missionId: $missionId)  {
+          
+          name
+        }
       }
     `,
-    variables
-  })
-
-export const addMission = async variables => 
-  axios.post(API_URL, {
-    mutation: ` {
-      addMission(sample_data) {
-        missionId
-      }
+      variables 
     }
+    })
+
+export const getMissionThreads = async variables =>
+  await axios({
+    url: API_URL,
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      query: `
+      query 
+      
+      ($missionId: String!) {
+        getMissionThreads(missionId: $missionId)  {
+          
+          task
+        }
+      }
+    `,
+      variables 
+    }
+    })
+
+
+export const setupTest = async variables => {
+  console.log("--variable from test-->", typeof (variables))
+  await axios.post(API_URL, {
+    query: `
+      mutation {
+        $content: String
+
+        setupTest {
+          missionId
+        }
+      }
     `,
     variables
   })
+}
 
-// export const getChild = async variables => 
-//   axios.post(API_URL, {
-//     query: `
-//       query ($id: ID!){
-//         getChild (id: $id) {
-//           id
-//           name
-//           gender
-//           age
-//         }
-//       }
-//     `,
-//     variables,
-//   });
-  
-  
-//   export const getParents = async => 
-//   axios.post(API_URL, {
-//     query: `
-//       {
-//         getParents {
-//           name
-//           id
-//           phoneNumber
-//           gender
-//           children
-//         }
-//       }
-//     `
-//   });
+export const addMission = async variables =>
+  await axios({
+    url: API_URL,
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      query: ` 
+        mutation(
+          $missionSpec: String
+        )  {
+          addMission(missionSpec: $missionSpec)
+        }
+    `,
+      variables
+    }
+  })
 
 
-// export const getChildByParams = async variables => 
+
+export const deleteMission = async variables =>
+  await axios({
+    url: API_URL,
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      query: ` 
+      mutation(
+        $missionId: String
+      )  {
+        deleteMission(missionId: $missionId)
+      }
+  `,
+      variables
+    }
+  })
+
+
+export const modMissionScenarioCategories = async variables =>
+  await axios({
+    url: API_URL,
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      query: ` 
+        mutation
+        (
+          $missionId: String,
+          $newCategories: ScenarioTypeInput
+        )
+        {
+          modMissionScenarioCategories(missionId: $missionId, newCategories: $newCategories) {
+            category
+          }
+        }
+    `,
+      variables
+    }
+  })
+
+export const addPerson = async variables =>
+  await axios({
+    url: API_URL,
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      query: ` 
+        mutation
+          
+        {
+          addPerson(missionId: "ZCAS", name: "FOOD") {
+            name
+          }
+        }
+    `,
+      variables: { missionId: "ZCAS", name: "fruit" }
+    }
+  })
+
+  export const addThread = async variables =>
+  await axios({
+    url: API_URL,
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      query: ` 
+        mutation
+        (  
+          $missionId: String, 
+          $thread: ThreadInput
+        )
+        {
+          addThread(missionId: $missionId, thread: $thread ) {
+            taskNumber
+            subjectUnit
+            metric
+            qualifier
+          }
+        }
+    `,
+      variables
+    }
+  })
+// export const getChildByParams = async variables =>
 //   axios.post(API_URL, {
 //     query: `
 //       query ($name: String!, $age: Int!, $gender: String!){
@@ -134,7 +248,7 @@ export const addMission = async variables =>
 //           gender
 //         }
 //       }
-      
+
 //     `,
 //     variables,
 //   })
@@ -152,7 +266,7 @@ export const addMission = async variables =>
 //     }
 //   `,
 //   });
- 
+
 // export const createHost = async variables =>
 //   axios.post(API_URL, {
 //     query: `
@@ -193,7 +307,7 @@ export const addMission = async variables =>
 //             name
 //             id
 //             gender
- 
+
 //           }
 //         }
 //     `
@@ -213,7 +327,7 @@ export const addMission = async variables =>
 //     `,
 //     variables,
 //   });
-  
+
 // export const getHostByParams = async variables => 
 //   axios.post(API_URL, {
 //     query: `

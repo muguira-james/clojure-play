@@ -3,7 +3,29 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
-  
+
+    input ThreadInput {
+        taskNumber: Int
+        task: String
+        subjectUnit: String
+        qualifier: String
+        metric: String
+    }
+
+    input SpecEntriesInput {
+        iconImage: String
+        title: String
+        description: String
+        bodyImage: String
+        color: String
+    }
+
+    input ScenarioTypeInput {
+        category: String
+        specs: [SpecEntriesInput]
+    }
+
+      
     type SpecEntries {
         iconImage: String
         title: String
@@ -18,6 +40,7 @@ const typeDefs = gql`
     }
 
     type Thread {
+        taskNumber: Int
         task: String
         subjectUnit: String
         qualifier: String
@@ -36,6 +59,7 @@ const typeDefs = gql`
         personnel: [People]
     }
 
+
     type Query { 
         getMissions: [MissionSpecification]
 
@@ -48,10 +72,18 @@ const typeDefs = gql`
     type Mutation {
         setupTest(content: String): MissionSpecification
         addPerson(missionId: String, name: String!): People
-        addMission(missionSpec: String): MissionSpecification
         
+        addMission(missionSpec: String): String
+        
+        deleteMission(missionId: String): String
+
+        modMissionScenarioCategories(missionId: String, newCategories: ScenarioTypeInput) : ScenarioType
+
+        addThread(missionId: String, thread: ThreadInput) : Thread
     }
 `;
+
+
 
 module.exports = typeDefs;
 

@@ -165,10 +165,10 @@ let resolvers = {
 
             let Specs = db.collection('specs')
             let cursor = await Specs.find({}).forEach(item => {
-                console.log("-1-->", item)
+                // console.log("-getmissions-->", item)
                 ary.push(item)
             })
-            console.log("-2->", ary)
+            console.log("-2-getMissions-->", ary)
             return ary
         },
         //
@@ -203,8 +203,8 @@ let resolvers = {
             console.log("-1-->", mission)
 
             ret = []
-            mission.threads.map(thread => {
-                console.log("---3--->", thread)
+            mission.threads.map( (thread, index) => {
+                console.log(`---${index}--->`, thread)
                 ret.push(thread)
             })
             return ret
@@ -229,11 +229,15 @@ let resolvers = {
         
     },
     Mutation: {
-        setupTest: (root, args, context, info) => {
+        //
+        //
+        setupTest: async (root, { cont } , context, info) => {
 
+            console.log("--setup-->", cont)
             let Specs = db.collection('specs')
-            let ret = Specs.insertOne(sampleData)
-            return ret
+            let ret = await Specs.insertOne(sampleData)
+            console.log("--inserting sample data---->", sampleData.missionId)
+            return sampleData
         },
         //
         // add a person to a specific mission
@@ -241,15 +245,24 @@ let resolvers = {
             let Specs = db.collection('specs')
 
             let ret = await Specs.update( { missionId: missionId }, { $push: { personnel: { name: name }}} )
+            console.log("--add person-->", name)
             return ( { name: name } )
+        },
+        addThread: async (root, { missionId, thread }, conntext, info) => {
+            let Specs = db.collection('specs')
+            console.log("new thread--->", missionId, JSON.stringify(thread))
+            let ret = await Specs.update( { missionId: missionId }, { $push: { threads: thread }} )
+            // console.log("--add thread-->", ret)
+            
+            return thread
         },
         //
         // add a complete mission
         addMission: async (root, { missionSpec }, context, info) => {
             let Specs = db.collection('specs')
-            
+
             let js = JSON.parse(missionSpec)
-            console.log("mission-->", js, typeof(js))
+            console.log("--add mission-->", js.missionId)
 
             try {
                 await Specs.insertOne(js)
@@ -257,6 +270,44 @@ let resolvers = {
                 console.log("err-->", err)
             }
             return js
+        },
+
+        //
+        // delete a mission
+        deleteMission: async (root, {missionId}, context, info) => {
+
+            console.log("--deleteOne-->", missionId)
+
+            let Specs = db.collection('specs')
+            
+            let ret = await Specs.deleteOne( { missionId: missionId })
+            
+
+            return `deleteMission: missionId = ${missionId}`
+        },
+
+        modMissionScenarioCategories: async (root, { missionId, newCategories }, context, info) => {
+            console.log("input--mod>", missionId, newCategories)
+            let Specs = db.collection('specs')
+            let mission = await Specs.findOne({ missionId: missionId })
+            //
+            // NEED ERROR handling !!!
+            //
+            console.log("-1-->", mission.missionId)
+
+            let newMission = {}
+            newMission.missionId = mission.missionId
+            newMission.description = mission.description ? mission.description : "no description" 
+            newMission.scenario = newCategories
+            newMission.threads = mission.threads
+            newMission.personnel = mission.personnel
+
+            try {
+                await Specs.update({ missionId: missionId }, { $set: { scenario: newCategories }} )
+            } catch (err) {
+                console.log("error-modMission->", err)
+            }
+            return newCategories
         }
 
     }
