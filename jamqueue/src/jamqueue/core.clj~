@@ -1,0 +1,127 @@
+;;
+;; enq & deq data from a message queue
+;;
+;; define a topic-queue
+;; add new topic names to the queue
+;; eng data to a specific topic
+;; deq data from a specific topic, pops the last item from topic
+;;
+;; notes;
+;;   will hang if you don't have something in the topic name
+;;   will crash if you don't name a defined topic
+;;
+(ns jamqueue.core
+  (:require [clojure.core.async :as a
+             :refer [>! <! >!! <!! go chan buffer close! thread alts! alts!! timeout]]
+            [ring.adapter.jetty :as jetty]
+            [clojure.pprint :as pprint]
+            [clojure.data.json :as json]
+            [ring.middleware.cors  :refer [wrap-cors]]
+            [ring.middleware.json :as rjson]
+            [ring.util.response :as rr]
+            )
+  (:gen-class))
+
+; (def echo-chan (chan)) ; create a channel
+; (go (println (<! echo-chan)))  ; wait for something to go on the channel
+
+; (>!! echo-chan "ketchup") ; put something on the channel
+
+;;
+;; define my single topic, which is a CSP channel
+(def topic-chan (chan))
+(def topic-channels {})
+
+(defn create-topic [topic-name]
+  (def topic-channels (assoc topic-channels topic-name (chan))))
+
+;;
+;; add payload to channel
+(defn  enq [topic payload]
+  (go (>!! (topic-channels topic) payload)))
+
+;;
+;; remove last item from channel 
+(defn deq [topic]
+  (<!! (topic-channels topic)))
+  
+    
+;;
+;; route not found handler
+(defn route-not-found  []
+    {
+     :status 200
+     :header {"Content-Type" "text/plain"}
+     :body (str "route not found")
+     }
+  )
+
+;;
+;; enq handler - handle an enqueue request
+(defn handler-enq [request]
+  (let [body (json/read-str (slurp (:body request)) :key-fn keyword)]
+    (do
+      (pprint/pprint (str "body==> " body))
+      (enq ( :topic body) (:payload body))
+      {
+       :status 200
+       :header {"Content-Type" "text/plain"}
+       :body (str "->topic: " (:topic body) " ->payload: " ( :payload body))
+       }
+      )))
+
+;;
+;; handle a dequeue request
+(defn handler-deq [request]
+  (let [body (json/read-str (slurp (:body request)) :key-fn keyword)
+        mydata (deq (:topic body))]
+    (do
+      (println (str mydata))
+      {
+       :status 200
+       :header {"Content-Type" "text/plain"}
+       :body (str "<div>" mydata "</div>")
+       }
+      )))
+
+(defn handler-create [request]
+  (let [body (json/read-str (slurp (:body request)) :key-fn keyword)]
+    (do
+      (create-topic (body :topic))
+      {
+       :status 200
+       :header {"Content-Type" "text/plain"}
+       :body (str "<div>Topic: " (body :topic) " created</div>")
+      }
+      )))
+
+(defn handler-list [request]
+  {
+   :status 200
+   :header {"Content-Type" "text/plain"}
+   :body (str (keys topic-channels))
+   }
+  )
+
+;;
+;; routes for the program
+(defn routes [request]
+  (let [uri (:uri request)]
+    (case uri
+      "/enq" (handler-enq request)
+      "/deq" (handler-deq request)
+      "/create" (handler-create request)
+      "/list" (handler-list request)
+      (route-not-found request)
+      )))
+
+(def app
+  (do
+    (-> routes
+        rjson/wrap-json-response ; make  the response a json  object
+        (wrap-cors :access-control-allow-origin [#".*"] :access-control-allow-methods [:get :post])
+        )))
+
+(defn -main  []
+  "start jetty and handle requests"
+  (jetty/run-jetty app {:port 5000}))
