@@ -4,7 +4,7 @@ description:
 
 From Winston, Artificial intelligence, chapter 4
 
-
+Depth-first
 
 ## License
 
