@@ -1,0 +1,147 @@
+{
+    "missionId": "JCAS",
+    "description": "",
+    "lastModified": "",
+    "scenario": [
+        {
+            "category": "Environment",
+            "specEntries": [
+                {
+                    "iconImage": "weather.png",
+                    "title": "Weather",
+                    "description": "Lorem ipsum ad infinitum",
+                    "bodyImage": "weatherMap.jpg",
+                    "color": "red",
+                    "order": 0
+                },
+                {
+                    "iconImage": "terrain.png",
+                    "title": "Terrain",
+                    "description": "Lorem ipsum ad infinitum",
+                    "bodyImage": "ambushMap.png",
+                    "color": "green",
+                    "order": 0
+                },
+                {
+                    "iconImage": "weather.png",
+                    "title": "Lorem Ipsum3",
+                    "description": "Lorem ipsum ad infinitum",
+                    "bodyImage": "weatherMap.jpg",
+                    "color": "blue",
+                    "order": 0
+                }
+            ]
+        },
+        {
+            "category": "Forces",
+            "specEntries": [
+                {
+                    "iconImage": "error.png",
+                    "title": "Possible Enemy Armaments",
+                    "description": "MP5, AK-47, SCAR, RPG, Vector",
+                    "bodyImage": "arms.jpg",
+                    "color": "red",
+                    "order": 0
+                },
+                {
+                    "iconImage": "knowledgeBase.png",
+                    "title": "Intel Analysis",
+                    "description": "Still waiting on final results",
+                    "bodyImage": "analysis.jpg",
+                    "color": "green",
+                    "order": 0
+                },
+                {
+                    "iconImage": "key.png",
+                    "title": "Auth Chain",
+                    "description": "Command chain to be deteremined soon",
+                    "bodyImage": "faces/Desert.png",
+                    "color": "purple",
+                    "order": 0
+                }
+            ]
+        },
+        {
+            "category": "Operations",
+            "specEntries": [
+                {
+                    "iconImage": "upload.png",
+                    "title": "Prepartion",
+                    "description": "This mission requires these steps to prepare",
+                    "bodyImage": "faces/Woman.png",
+                    "color": "blue",
+                    "order": 0
+                },
+                {
+                    "iconImage": "download.png",
+                    "title": "Deployment",
+                    "description": "These units will be deployed here",
+                    "bodyImage": "faces/Tank.png",
+                    "color": "purple",
+                    "order": 0
+                }
+            ]
+        },
+        {
+            "category": "Components",
+            "specEntries": [
+                {
+                    "iconImage": "gear.png",
+                    "title": "Units",
+                    "description": "Combat Ready Units",
+                    "bodyImage": "faces/MilitaryGuy.png",
+                    "color": "orange",
+                    "order": 0
+                }
+            ]
+        }
+    ],
+    "missionThreads": [
+        {
+            "name": "Sample Thread 1",
+            "tasks": [
+                {
+                    "name": "Sample Task 1",
+                    "order": "1",
+                    "subjectUnit": "Plt member",
+                    "qualifier": "",
+                    "metric": "< 2 min",
+                    "description": "",
+                    "files": "",
+                    "platforms": ""
+                },
+                {
+                    "name": "Sample Task 2",
+                    "order": "2",
+                    "subjectUnit": "Plt member",
+                    "qualifier": "",
+                    "metric": "< 2 min",
+                    "description": "",
+                    "files": "",
+                    "platforms": ""
+                }
+            ]
+        },
+        {
+            "name": "Sample Thread 2",
+            "tasks": [
+                {
+                    "name": "Sample Task 1",
+                    "order": "",
+                    "subjectUnit": "Plt member",
+                    "qualifier": "",
+                    "metric": "< 2 min",
+                    "description": "",
+                    "files": "",
+                    "platforms": ""
+                }
+            ]
+        }
+    ],
+    "tags": null,
+    "personnel": null,
+    "groups": null,
+    "missionScope": null,
+    "template": "",
+    "isPrivate": false
+}
