@@ -19,7 +19,7 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/register": "^7.10.4",
     "apollo-server": "^2.6.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "dotenv": "^8.2.0",
     "graphql": "^15.1.0",
     "mongodb": "^3.5.9",
