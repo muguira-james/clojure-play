@@ -1,19 +1,41 @@
+
+;;
+;; from Winston Artificial Intelligence
+;;
+;; a network search demo
+;;
 (ns hepost.search)
                                         ;
 ;; define my network
+; (def net
+;  {
+;   's { :l 'a :r 'd }
+;   'a { :l 'b :r 'd }
+;   'd { :l 'a :r 'e }
+;   'b { :l 'c :r 'e }
+;   'c { }
+;   'e { :l 'b :r 'f }
+;   'f { :l 'z }
+;   'z { }
+;   })
+
 (def net
   {
-   's { :l 'a :r 'd }
+   's { :l 'a :r 'g }
    'a { :l 'b :r 'd }
-   'd { :l 'a :r 'e }
-   'b { :l 'c :r 'e }
-   'c { }
-   'e { :l 'b :r 'f }
-   'f { :l 'g }
-   'g { }
+   'b { :l 'c }
+   'c { :l 'z }
+   'd { :l 'e :r 'f }
+   'e { }
+   'f { }
+   'g { :l 'h :r 'i }
+   'h { }
+   'i { }
+   'z { }
    })
 
-
+;;
+;; use java data structures - these ARE NOT clojure structs and you have to be careful
 (def que (java.util.LinkedList.))
 (def visit (java.util.LinkedList.))
 
@@ -22,6 +44,8 @@
 (defn enque [n]
   (.addFirst que n))
 
+;;
+;; this add the item to the  tail of the queue
 (defn enque-b [n]
   (.add que n))
 ;;
@@ -30,21 +54,22 @@
   (.remove que))
 
 ;;
-;; clear the list
+;; clear the que linkedlist
 (defn drain-q []
   (.clear que))
 
 ;;
-;; clear the list
+;; clear the visit Linkedlist
 (defn drain-v []
   (.clear visit))
 
+;; clear them both 
 (defn drain-qs []
   (do
     (drain-q)
     (drain-v)))
 ;;
-;; remember where i've been
+;; remember where i've been; add nodes to visit
 (defn been-here [n]
   (do
     ;; (prn (str "visited= " n))
@@ -53,7 +78,7 @@
       )))
 
 ;;
-;; remember the children
+;; remember the children - adding nodes to the front of the queue
 (defn save-children [n]
   (let [left ((net n) :l)
         right ((net n) :r)]
@@ -84,11 +109,11 @@
 ;; usage: (d-first que save-children)
 (defn d-first [q save-fn]
   (let [node (first q)]
-    (if (= node 'g)
+    (if (= node 'z)
       ;; true found our goal
       (do
         (println (str "found my goal -> " node " visit m = " visit))
-        'g)
+        'z)
       ;; false: continue searching
       (do
         
@@ -102,10 +127,11 @@
 ;;
 ;; entry point for my container
 ;; you can build a queue with (enque 's)
-;; search que
+;; usage:  (search que)
+;;
 (defn search [q]
   (let [node (first q)]
-    (if (= node 'g)
+    (if (= node 'z)
       ;; true found our goal
       (do
         (println (str "found my goal -> " node " visit m = " visit))
