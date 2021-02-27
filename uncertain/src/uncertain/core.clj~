@@ -1,0 +1,50 @@
+(ns uncertain.core
+  (:gen-class))
+
+
+(comment "
+
+
+1	LONGi Solar	China
+2	JinkoSolar	China
+3	JA Solar	China
+4	Trina Solar	China
+5	Canadian Solar	Canada
+6	Hanwha Q-CELLS	South Korea
+7	Risen Energy	China
+8	Astroenergy	China
+9	First Solar	USA
+10	Suntech	China
+
+How rate them
+
+Name Plate power rating
+power tolerance
+Solar cell effeciency -just under 23%
+Termperater coefficiency
+Snow and wind load
+
+
+JinkoSolar Holding Co. Ltd. JKS (China)
+
+    Revenue TTM: $4.6 billion
+    Net Income TTM: $163.1 million
+    Market Cap: $909.9 million
+    1-Year Trailing Total Return: 6.9%
+    Exchange: New York Stock Exchange
+
+Canadian Solar Inc. (CSIQ)
+
+    Revenue (TTM): $3.2 billion
+    Net Income (TTM): $257.3 million
+    Market Cap: $1.6 billion
+    1-Year Trailing Total Return: 30.5%
+    Exchange: NASDAQ
+
+"
+)
+
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+  (println "Hello, World!"))
