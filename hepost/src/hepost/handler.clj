@@ -81,5 +81,5 @@
      (->
 	app-routes
 	(wrap-defaults api-defaults)
-	(wrap-cors :access-control-allow-origin [#".*"] :access-control-allow-headers [:get :post])
+	(wrap-cors :access-control-allow-origin [#".*"] :access-control-allow-methods [:get :post])
      ))
