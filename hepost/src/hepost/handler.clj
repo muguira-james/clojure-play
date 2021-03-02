@@ -15,6 +15,7 @@
             [compojure.route :as route]
             [clojure.data.json :as json]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
+	    [ring.middleware.cors :refer  [wrap-cors]]	
             [clojure.pprint :as pprint]
             [hepost.search :as srch]
             ))
@@ -55,7 +56,7 @@
   (GET "/" [] {
                :status 200
                :headers {"Content-Type" "text/html; charset=utf-8"}
-               :body "Hello James"
+               :body "{ payload: Hello James }"
                }
        )
   (POST "/abba"   request
@@ -74,5 +75,11 @@
 
 ;;
 ;; get the server started - note: i changed site-defaults to api-defaults
+;; (def app
+;;   (wrap-defaults app-routes api-defaults))
 (def app
-  (wrap-defaults app-routes api-defaults))
+     (->
+	app-routes
+	(wrap-defaults api-defaults)
+	(wrap-cors :access-control-allow-origin [#".*"] :access-control-allow-headers [:get :post])
+     ))
