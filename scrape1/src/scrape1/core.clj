@@ -1,16 +1,27 @@
 ;;
 ;; scrape various sites for information
 ;;
+;; right the list is
+;;  cnn business
+;;  bbc business
+;;  cnbc
+;;
 (ns scrape1.core
   (:require [net.cgrand.enlive-html :as html]
             [org.httpkit.client :as http]
             [clojure.edn :as edn]))
 
+;; --------------- handle the input DB --------------------
 (comment
+
+  this is an example of what the feeds file could look like
+  name is the slector for the feed low-level processor (i.e. css selector)
+  link is the pointer (url) to the page
+  
 (def feeds [
             { :name "cnn" :link "https://cnn.com/BUSINESS" }
             { :name "bbc" :link "https://www.bbc.com/news/business" }
-            { :name "cnbc" :link "https://www.cnbc.com/quotes/V?tab=news" }
+            { :name "cnbc" :link "https://www.cnbc.com/quotes/V?tab=news" :base "https://www.cnbc.com/quotes" :tab "?tab=news" }
             ])
 )
 
@@ -24,9 +35,12 @@
   (reset! feeds
           (edn/read-string (slurp fileName))))
 
+;;------------------- handle URL --------------------------
 ;;
 ;; the basic test case is cnn business
 (def ^:dynamic *base-url* "https://cnn.com/BUSINESS")
+
+;;
 
 ;;
 ;; options to set user-agent and ignore SSL
@@ -45,60 +59,122 @@
   (html/html-snippet
    (:body @(http/get url options ))))
 
+;; ----------------- extract to sequence -------------------
 
+(defn extract-cnbc-to-seq [url]
+  (html/select (get-dom-from-url url) [:a.LatestNews-headline]))
+
+(defn extract-cnn-business-to-seq [url]
+  (html/select (get-dom-from-url url) [:span.cd__headline-text]))
+
+(defn extract-bbc-business-to-seq [url]
+  (html/select (get-dom-from-url url) [:h3.gs-c-promo-heading__title]))
+
+(defn extract-cnbc [ base ticker tab ]
+  (let [url (str base ticker tab)]
+    (extract-cnbc-to-seq url)))
+        
+;; ---------------- print ---------------------------------
 ;;
-;; grab from cnn business
-(defn extract-titles-cnn [dom]
-  (doseq [i (html/select dom [:span.cd__headline-text])]
+;; grab and print the titles from a seq
+(defn print-titles [seq]
+  (doseq [i seq]
     (println (first (get i :content)))))
 
-;;
-;; grab from bbc business
-(defn extract-titles-bbc-business [dom]
-  (doseq [i (html/select dom [:h3.gs-c-promo-heading__title])]
-    (println (first (get i :content)))))
 
 ;;
-;; grab from cnbc - this has  the stock ticker built=-in !!!
+;; given a map pull out the title
+(defn answer-title [m]
+  (first (get m :content)))
+
 ;;
-;; ;; https://www.cnbc.com/quotes/V?tab=news
-(defn extract-titles-cnbc [dom]
-  (doseq [i (html/select dom [:a.LatestNews-headline])]
-    (println (first (get i :content)))))
+;; given a  map pull out the link
+(defn answer-link [m]
+  (get (get m :attrs) :href))
 
+;;
+;; make a pretty map of the title and link
+(defn  build-map-record [title link]
+  (str "{ :title \"" title "\" :link \"" link "\" }" ))
 
-;; (html/select (html/html-snippet (:body @(http/get "https://www.bbc.com/news/business" {:insecure true}))) [:h3.gs-c-promo-heading__title])
-;; Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:88.0) Gecko/20100101 Firefox/88.0
 (comment
-(defn -main
-  "fetch html title from cnn business"
-  [& args]
-  (do
-    (println "----- cnn business-------")
-    (extract-titles-cnn (get-dom-from-url "https://cnn.com/BUSINESS"))
-    (println "----- bbc  business -------")
-    (extract-titles-bbc-business (get-dom-from-url "https://www.bbc.com/news/business"))
-    (println "----cnbc VISA --------")
-    (extract-titles-cnbc (get-dom-from-url "https://www.cnbc.com/quotes/V?tab=news"))
-    ))
- ) 
 
-(defn print-a-feed [source link]
+  example code to print a seq of cnbc dom
+  
+(defn p-seq [seq]
+  (if (not (empty? seq))
+    (let [it (first (get (first seq) :content))]
+      (println it)
+      (recur (rest seq)))))
+)
+
+;;
+;; use cnbc dom and neatly print the title and link
+(defn print-seq-neat [seq]
+  (if (not (empty? seq))
+    (let [it (first seq)
+          title (answer-title it)
+          link (get (get it :attrs) :href)]
+      (do
+        (println title)
+        (println)
+        (println link)
+        (println)
+        (recur (rest seq))))))
+
+;;
+;; use cnbc and print the titlle and link in a map
+(defn print-seq [seq]
+  (if (not (empty? seq))
+    (let [it (first seq)
+          title (answer-title it)
+          link (get (get it :attrs) :href)]
+      (do
+        (println (build-map-record title link))
+        (recur (rest seq))))))
+
+
+;; ----------------- output file handling ------------------
+;;
+;; use cnbc and write the map to a file
+(defn loop-thru-sequence [seq fh]
+  (if (not (empty? seq))
+    (let [it (first seq)
+          title (answer-title it)
+          link (get (get it :attrs) :href)]
+      (.write fh (build-map-record title link))
+      (recur (rest seq) fh))))
+
+;;
+;; create file from an input seq of maps (from cnbc)
+(defn build-file [ fileName seq]
+    (with-open [fh (clojure.java.io/writer fileName )]
+      (do
+        (.write fh (str "[ "))
+        (loop-thru-sequence seq fh)
+        (.write fh " ]"))))
+
+;; ----------- presentation code ----------------------
+
+(defn print-a-news-item [source link]
   (do
     (println (str "---------- " source " --------------"))
-    (cond (= "cnn" source) (extract-titles-cnn (get-dom-from-url link))
-          (= "bbc" source) (extract-titles-bbc-business (get-dom-from-url link))
-          (= "cnbc" source) (extract-titles-cnbc (get-dom-from-url link)))
-    ))
+    (cond (= "cnn" source) (print-titles (extract-cnn-business-to-seq link))
+          (= "bbc" source) (print-titles (extract-bbc-business-to-seq link))
+          (= "cnbc" source) (print-titles (extract-cnbc-to-seq link))
+          :else (println (str "--> did not recognize this source: -->" source))
+    )))
 
-(defn print-feeds [col]
+(defn print-news [col]
   (if (not (empty? col))
     (let [source (get (first col) :name)
           link (get (first col) :link)]
-      (print-a-feed source link)
+
+      (print-a-news-item source link)
       (recur (rest col)))))
     
 (defn -main [& args]
   (do
     (init-feeds "resources/feeds.edn")
-    (print-feeds @feeds)))
+    (print-news @feeds)
+    (build-file "out2.txt" (extract-cnbc-to-seq "https://www.cnbc.com/quotes/V?tab=news"))))

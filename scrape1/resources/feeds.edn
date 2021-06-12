@@ -1,5 +1,5 @@
 [
             { :name "cnn" :link "https://cnn.com/BUSINESS" }
             { :name "bbc" :link "https://www.bbc.com/news/business" }
-            { :name "cnbc" :link "https://www.cnbc.com/quotes/V?tab=news" }
+            { :name "cnbc" :link "https://www.cnbc.com/quotes/V?tab=news" :base "https://www.cnbc.com/quotes/" :tab "?tab=news" }
             ]
