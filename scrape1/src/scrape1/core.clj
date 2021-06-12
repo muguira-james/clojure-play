@@ -17,13 +17,15 @@
   this is an example of what the feeds file could look like
   name is the slector for the feed low-level processor (i.e. css selector)
   link is the pointer (url) to the page
-  
+
+  OLD FEEDS format !!!
 (def feeds [
             { :name "cnn" :link "https://cnn.com/BUSINESS" }
             { :name "bbc" :link "https://www.bbc.com/news/business" }
             { :name "cnbc" :link "https://www.cnbc.com/quotes/V?tab=news" :base "https://www.cnbc.com/quotes" :tab "?tab=news" }
             ])
 
+NEW FEED FORMAT !
 
 (def feeds { "cnn" { :name "CNN Business" :link "https://cnn.com/BUSINESS" }
              "bbc" { :name "BBC business" :link  "https://www.bbc.com/news/business" }
@@ -181,7 +183,7 @@
 
 (defn -main [& args]
   (do
-    (init-feeds "resources/feeds.edn")
+    (init-feeds "resources/feed2.edn")
     (print-news @feeds)
     (build-file "out2.txt" (extract-cnbc-to-seq "https://www.cnbc.com/quotes/V?tab=news"))))
 

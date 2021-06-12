@@ -1,4 +1,4 @@
 { "cnn" { :name "CNN Business" :link "https://cnn.com/BUSINESS" }
              "bbc" { :name "BBC business" :link  "https://www.bbc.com/news/business" }
-            "cnbc" { :name "CNBC"         :link "https://www.cnbc.com/quotes/V?tab=news" :base "https://www.cnbc.com/quotes" :tab "?tab=news" }
+            "cnbc" { :name "CNBC"         :link "https://www.cnbc.com/quotes/V?tab=news" :base "https://www.cnbc.com/quotes/" :tab "?tab=news" }
             }
