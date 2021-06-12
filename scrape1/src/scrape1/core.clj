@@ -23,9 +23,15 @@
             { :name "bbc" :link "https://www.bbc.com/news/business" }
             { :name "cnbc" :link "https://www.cnbc.com/quotes/V?tab=news" :base "https://www.cnbc.com/quotes" :tab "?tab=news" }
             ])
+
+
+(def feeds { "cnn" { :name "CNN Business" :link "https://cnn.com/BUSINESS" }
+             "bbc" { :name "BBC business" :link  "https://www.bbc.com/news/business" }
+            "cnbc" { :name "CNBC"         :link "https://www.cnbc.com/quotes/V?tab=news" :base "https://www.cnbc.com/quotes" :tab "?tab=news" }
+            }
 )
 
-(def feeds (atom []))
+(def feeds (atom {}))
 
 ;;
 ;; pull in the feeds from the file: fileName
@@ -166,15 +172,16 @@
     )))
 
 (defn print-news [col]
-  (if (not (empty? col))
-    (let [source (get (first col) :name)
-          link (get (first col) :link)]
-
+  (doseq [[k v] @feeds]
+    (let [source k
+          link (get v :link)]
       (print-a-news-item source link)
-      (recur (rest col)))))
-    
+      )))
+
+
 (defn -main [& args]
   (do
     (init-feeds "resources/feeds.edn")
     (print-news @feeds)
     (build-file "out2.txt" (extract-cnbc-to-seq "https://www.cnbc.com/quotes/V?tab=news"))))
+
