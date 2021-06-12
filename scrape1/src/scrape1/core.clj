@@ -52,6 +52,11 @@
       (print-a-news-item source link)
       )))
 
+(defn cnbc-news [ticker]
+  (let [base (get (get @fd/feeds "cnbc") :base)
+        suf (get (get @fd/feeds "cnbc") :tab)]
+    (utils/print-titles (url/extract-cnbc base ticker suf))))
+
 
 (defn -main [& args]
   (do

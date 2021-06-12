@@ -7,6 +7,8 @@
   (doseq [i seq]
     (println (first (get i :content)))))
 
+(defn extract-title [m]
+  (first (get m :content)))
 
 ;;
 ;; given a map pull out the title

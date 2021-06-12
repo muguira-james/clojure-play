@@ -41,3 +41,4 @@
 (defn extract-cnbc [ base ticker tab ]
   (let [url (str base ticker tab)]
     (extract-cnbc-to-seq url)))
+
