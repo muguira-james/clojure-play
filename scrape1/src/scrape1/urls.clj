@@ -67,27 +67,41 @@
   (str alphavantage-url
        TIME-SERIES-DAILY "&symbol=" symbol "&datatype=" data-type "&apikey=" apikey))
 
-(defn alpha-v-income [symbol]
+(defn alpha-v-income-url [symbol]
   (str alphavantage-url INCOME-STATEMENT "&symbol=" symbol "&apikey=" apikey))
 
-
+(defn get-income-stmt [tckr]
+  (json/read-str (:body @(http/get (alpha-v-income-url tckr))) :key-fn keyword))
+  
 ;; ---------------------  ratio code ---------------
-(defn netProfit-margin [ticker]
-  (let [base "https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol="
-        apikey "&apikey=WO3506PATLTSXPJB"
-        junk (:body @(http/get (alpha-v-income ticker)))
-        js (json/read-str junk :key-fn keyword)]
-    (float ( /
-            (Long. (:netIncome (first (:annualReports js))))
-            (Long. (:totalRevenue (first (:annualReports js))))))
-    ))
+(defn get-operating-income [inc-stmt]
+  (Long. (:operatingIncome (first (:annualReports inc-stmt)))))
+
+(defn get-net-income [inc-stmt]
+  (Long. (:netIncome (first (:annualReports inc-stmt)))))
+
+(defn get-total-revenue [inc-stmt]
+  (Long. (:totalRevenue (first (:annualReports inc-stmt)))))
+
+(defn netProfit-margin [net-income total-revenue]
+  (float ( / net-income total-revenue)))
+
+
+(defn operating-margin [operating-income total-revenue]
+  (float (/ operating-income total-revenue)))
 
 
 
-
-
-
-
+(defn ratio-driver [ticker]
+  (let [inc-stmt (get-income-stmt ticker)]
+    (do
+      (println (str "operating margin= "
+                    (operating-margin
+                     (get-operating-income inc-stmt) (get-total-revenue inc-stmt))))
+      (println (str "net profit = "
+                    (netProfit-margin
+                     (get-net-income inc-stmt) (get-total-revenue inc-stmt)))0
+      ))))
 
 
 ;; ----  DEAD commented out code ----------------
