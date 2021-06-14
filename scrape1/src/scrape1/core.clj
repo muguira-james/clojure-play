@@ -10,9 +10,24 @@
   (:require 
    [scrape1.urls :as url]
    [scrape1.utils :as utils]
-   [scrape1.feedsDB :as fd] ))
+   [scrape1.feedsDB :as fd]
+   [scrape1.fetch :as av]
+   [org.httpkit.sni-client :as sni-client]
+   [clojure.data.json :as json]
+   ))
 
-        
+(comment
+
+  (:require [org.httpkit.sni-client :as sni-client]
+   )
+(def junk @(http/get (av/alpha-v-income 'IBM)))
+
+  ;; Change default client for your whole application:
+  (alter-var-root #'org.httpkit.client/*default-client* (fn [_] sni-client/default-client))
+
+  )
+
+;; ----------- presentation code ----------------------
 
 ;; ----------------- output file handling ------------------
 ;;
@@ -60,6 +75,10 @@
 
 (defn -main [& args]
   (do
+    
+    ;; Change default client for your whole application:
+    (alter-var-root #'org.httpkit.client/*default-client* (fn [_] sni-client/default-client))
+    
     (fd/init-feeds "resources/feed2.edn")
     (print-news @fd/feeds)
     (build-file "out2.txt" (url/extract-cnbc-to-seq "https://www.cnbc.com/quotes/V?tab=news"))))
