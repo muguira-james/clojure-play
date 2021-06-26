@@ -53,7 +53,7 @@
 (def TIME-SERIES-DAILY 'TIME_SERIES_DAILY)
 (def FULL-SIZE 'full)
 (def data-type 'csv)
-(def apikey 'WO3506PATLTSXPJB)
+(def apikey 'FOO)
 (def INCOME-STATEMENT "INCOME_STATEMENT")
 
 
