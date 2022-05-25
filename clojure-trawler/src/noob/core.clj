@@ -141,6 +141,6 @@
   (do
     (init-feeds "resources/data.edn")
     (build-news-list @feeds)
-    (print-news-list)
+    (print-news-list)))
     
 
