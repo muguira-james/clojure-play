@@ -62,80 +62,74 @@
 
 ;; ================================================
 ;;
-;; pall -> print all items in a map
-(defn pall [m]
-  (if (not (empty? m))
-    (do
-      (println (str "item: " (first m)))
-      (recur (rest m)))))
-
-;;
-;; pop-title -> print just the title from the map :entries field
-(defn pop-title [m]
-  (println (str "item: " (get (first m) :title))))
-;;
-;; print the title from a map, preface with the "source)
-(defn pop-title-2 [s m]
-  (println (str s ": " (get (first m) :title))))
 ;;
 ;; just return the title
 (defn get-title [m]
   (get m :title))
 ;;
-;; pop-link -> print just the link from the map :entries
-(defn ppop-link [m]
-  (println (str "link: " (get (first m) :link))))
+
+;;
+;; return the source 
+(defn get-source [item]
+  (get item :source))
 ;;
 ;; just return the link
-(defn pop-link [m]
+(defn get-link [m]
   (get m :link))
 
-;;
-;; recurse through and print all the titles
-(defn pall-title [m]
-  (if (not (empty? m))
-    (do
-      (pop-title m)
-      (recur (rest m)))))
-;;
-;; loop through a map, printing the "source: title"
-(defn pall-title-2 [s m]
-  (if (not (empty? m))
-    (do
-      (pop-title-2 s m)
-      (recur s (rest m)))))
-;;
-;; recurse through and print all the links
-(defn pall-link [m]
-  (if (not (empty? m))
-    (do
-      (pop-link m)
-      (recur (rest m)))))
+(defn get-entries [entry]
+  (get (rss/parse-feed (get-link entry)) :entries))
 
 
 ;;
-;; print news in the config file
-(defn print-4
-  [col]
-  (if (not (empty? col))
+;; the new list as a java ArrayList
+;;
+(def news-list (new java.util.ArrayList))
+;;
+;;
+;;
+;; create a hash of these items
+(defn build-news-item [source title link]
+  { :source source :title title :link link})
+
+
+;;
+;; create the new list
+(defn build-news-list [collection]
+  (with-open [w (clojure.java.io/writer "temp.str")]
+    (doseq [item collection]
+      (let [entries (get-entries item)
+            source (get-source item)]
+        (doseq [i entries]
+          (.add news-list
+                (pr-str
+                 (build-news-item source (get-title i) (get-link i)))))))))
+
+  
+
+;; (build-news-list @feeds news-list)
+(defn print-news-list []
+  (let [size (.size news-list)]
     (do
-      (pall-title (get (rss/parse-feed (pop-link (first col))) :entries))
-      (recur (rest col)))))
+      (println (str "size = " (.size news-list)))
+      (doseq [i (range size)]
+        (println (str (.get news-list i)))))))
+
 
 ;;
-;; pretty print all new in "source: title" format
-;;
-;; this assumes the collection a map (not an atom)
-;;
-(defn print-all-news [col]
-  (if (not (empty? col))
-    (let
-      [source (get (first col) :source)
-       link (pop-link (first col))]
-      (do
-        (pall-title-2 source (get (rss/parse-feed link) :entries))
-        (recur (rest col))))))
-
+;; build a news list from a collection of feed items
+(defn buld-n-print-news-list [collection]
+  (doseq [item collection]
+    (let [entries (get-entries item)
+          source (get-source item)]
+      (doseq [i entries]
+        (println 
+         (str (build-news-item
+               source
+               (get-title i)
+               (get-link i))))))))
+                  
+      
 ;;---------------------------------------------------------
 ;;
 ;; the main just "runs" the app
@@ -146,5 +140,7 @@
 (defn -main []
   (do
     (init-feeds "resources/data.edn")
-    (print-all-news @feeds)))
+    (build-news-list @feeds)
+    (print-news-list)
+    
 
