@@ -6,134 +6,29 @@
 (ns scrape1.core
   (:gen-class))
 
-
-(require '[feedparser-clj.core :as rss])
+(require '[opennlp-clj.core :as nlp])
+(require '[scrape1.webtools :as wt])
 (require '[clojure.edn :as edn])
-(require '[clojure.java.io :as io])
+(require '[scrape1.buildnewslist :as bnl])
+(require '[scrape1.feed :as feed])
 
 ;;
-;; First setup and use the edn file to get configuration
-;;
-;; The next 4 forms:
-;; feeds is the configuration atom
-;; init-feeds pulls config in from disk
-;; save-edn is my experimentation with creating a edn
-;; read-end is experimentation with reading one from disk
+;; get all text on the page - this needs to improve to NOT get stuff in menus!!
+(defn get-page-text [map-item]
+  (get (wt/fetch-web-page-data (bnl/get-link (edn/read-string map-item))) :page-text))
 
+;; get the names of the people mentioned in the page
+(defn get-names-on-page [page]
+  (nlp/person-names (nlp/tokenize->java page)))
 
-;;
-;; set up the extensible data notation read (edn)
-(def feeds (atom []))
-;;
-;; pull in the feeds from the file: fileName
-(defn init-feeds [fileName]
-  (reset! feeds
-          (edn/read-string (slurp fileName))))
-;;
-;;
-;; This is an example of what ann "EDN" file might look like
-;; save a copy of the config to a file in resources dir
-(defn save-edn
-  []
-  (spit "resources/data.edn" (pr-str [{:source "cnn" :link "http://rss.cnn.com/rss/money_news_international.rss"}])))
-;;
-;; read back that edn from file and print 2 things
-(defn read-edn
-  [fileName]
-  (let [z (edn/read-string (slurp fileName))]
-    (println (first z))
-    (println (get (first z) :link))
-    (get (first z) :link)))
+;; get locations mentioned in the page
+(defn get-locations-on-page [page]
+  (nlp/location-names (nlp/tokenize->java page)))
 
-;; ================================================
-;;
-;; example code to learn about maps and rss/feed reading
-;;
-;; cnn is a test map to learn with
+;;get company names mentioned in the page
+(defn get-company-names-on-page [page]
+  (nlp/company-names (nlp/tokenize->java page)))
 
-(def cnn '({:source "hello", :link "bye"} {:source "hello2", :link "bye2"}))
-
-
-;; first get the rss feed in a lazy-var.
-(def rss (rss/parse-feed (str "http://rss.cnn.com/rss/money_news_international.rss")))
-;;
-;; move over to point to just the entries in the RSS feed
-(def money (get rss :entries))
-
-;; ================================================
-;;
-;;
-;; just return the title
-(defn get-title [m]
-  (get m :title))
-;;
-
-;;
-;; return the source 
-(defn get-source [item]
-  (get item :source))
-;;
-;; just return the link
-(defn get-link [m]
-  (get m :link))
-
-(defn get-entries [entry]
-  (get (rss/parse-feed (get-link entry)) :entries))
-
-
-;;
-;; the new list as a java ArrayList
-;;
-(def news-list (new java.util.ArrayList))
-;;
-;;
-;;
-;; create a hash of these items
-(defn build-news-item [source title link]
-  { :source source :title title :link link})
-
-
-;;
-;; create the new list
-(defn build-news-list [collection]
-  (with-open [w (clojure.java.io/writer "temp.str")]
-    (doseq [item collection]
-      (let [entries (get-entries item)
-            source (get-source item)]
-        (doseq [i entries]
-          (.add news-list
-                (pr-str
-                 (build-news-item source (get-title i) (get-link i))))
-          (.write w (pr-str (build-news-item source (get-title i) (get-link i))))
-          )))))
-
-  
-
-;; (build-news-list @feeds news-list)
-(defn print-news-list []
-  (let [size (.size news-list)]
-    (do
-      (println (str "size = " (.size news-list)))
-      (doseq [i (range size)]
-        (println (str (.get news-list i)))))))
-
-
-;;
-;; build a news list from a collection of feed items
-(defn buld-n-print-news-list [collection]
-  (doseq [item collection]
-    (let [entries (get-entries item)
-          source (get-source item)]
-      (doseq [i entries]
-        (println 
-         (str (build-news-item
-               source
-               (get-title i)
-               (get-link i))))))))
-                  
-(defn news-list-from-file [contents]
-  (edn/read-string contents))
-  
 ;;---------------------------------------------------------
 ;;
 ;; the main just "runs" the app
@@ -142,13 +37,18 @@
 ;; print-all-news: input is the de-ref'ed feeds atom
 ;;
 (defn -main []
-  (do
-    ; need to check if the resource file is present !!!
-    (init-feeds "resources/data.edn")
-    ; should wrap in a try / catch
-    (build-news-list @feeds)
-    (println @feeds)))
+  (feed/init-feeds "resources/data.edn")
+  (feed/print-feeds)
+  (bnl/get-news-list-from-file "temp.str")
+  ;; these nest calls should save the text and then operate
+  (let [txt (get-page-text (first bnl/news-list))]
+    (do
+      (println (get-company-names-on-page txt))
+      (println (get-names-on-page txt))
+      (println (get-locations-on-page txt))))
+  ;; finally, count the articles
+  (println (str "number of news articles = " (bnl/count-news-list))))
     
-    ; (print-news-list)))
+
     
 

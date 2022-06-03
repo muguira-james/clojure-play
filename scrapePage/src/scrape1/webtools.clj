@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]))
 
 (import (org.jsoup Jsoup))
-(import (com.markwatson.opennlp NLP))
+
 
 (defn get-html-anchors [jsoup-web-page-contents]
   (let [anchors (. jsoup-web-page-contents select "a[href]")]
@@ -30,5 +30,4 @@
         all-page-text (. doc text)
         anchors (get-html-anchors doc)]
     {:page-text all-page-text :anchors anchors}))
-
 
