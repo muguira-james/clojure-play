@@ -5,13 +5,14 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [
                  [org.clojure/clojure "1.10.0"]
-                                        ; Compojure - A basic routing library
+                 ;; Compojure - A basic routing library
                  [compojure "1.6.1"]
-                                        ; Our Http library for client/server
+                 ;; Our Http library for client/server
                  [http-kit "2.3.0"]
-                                        ; Ring defaults - for query params etc
+                 ;; Ring defaults - for query params etc
                  [ring/ring-defaults "0.3.2"]
-                                        ; Clojure data.JSON library
+                 [ring-cors "0.1.13"]
+                 ;; Clojure data.JSON library
                  [org.clojure/data.json "0.2.6"]
                  ; bring jsoup in
                  [org.jsoup/jsoup "1.7.3"]
