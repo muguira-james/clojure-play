@@ -20,7 +20,7 @@
 
 ;;
 ;; add all the middleware
-;; e.g. retrieve the body from a post
+;; e.g. retrieve the body from a post with wrap-defaults
 ;;
 (def app
   (->

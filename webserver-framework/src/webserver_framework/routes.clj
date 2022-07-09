@@ -41,11 +41,24 @@
      :body  tst}))
 
 ;;
+;; echo the sent json back, logging as you go
+;;
+(defn echoPOSTBody
+  [request]
+  (do
+    (let [rtnbody (return-json-from-body request)]
+      (println (str " body -> " rtnbody))
+      {:status 200
+       :headers {"Content-Type" "application/json"}
+       :body  (with-out-str (pp/pprint rtnbody))}
+      )))
+;;
 ;; my routing table
 ;;
 (defroutes app-routes
   (GET "/" request (echoRequest request))
   (GET "/test" request (echoTest request))
   (POST "/ptest" request (echoPostTest request))
+  (POST "/pbtest" request (echoPOSTBody request))
   )
 

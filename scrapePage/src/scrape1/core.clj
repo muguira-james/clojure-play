@@ -12,6 +12,7 @@
 (require '[scrape1.buildnewslist :as bnl])
 (require '[scrape1.feed :as feed])
 
+
 ;;
 ;; get all text on the page - this needs to improve to NOT get stuff in menus!!
 (defn get-page-text [map-item]
