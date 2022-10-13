@@ -1,0 +1,24 @@
+(ns readindex.core
+  (:gen-class))
+
+
+(import [org.apache.lucene.store FSDirectory Directory])
+(import (org.apache.lucene.index DirectoryReader))
+(import [java.io File])
+
+(def dir-path "/home/magoo/code/INDEXDIRECTORY")
+
+
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+
+  (let* [indexPath dir-path
+        directory (FSDirectory/open (.toPath (File. indexPath)))
+        reader (DirectoryReader/open directory)]
+  
+
+    (println (str "number of docs indexed " (.numDocs reader)))
+    
+    (.close reader)
+    (.close directory)))
