@@ -1,0 +1,1 @@
+Radio Tiger TeamGraphic in support of PCR TBD 1The graphic below shows an example of multiple incoming signal PDUs being received at differing sample rates and encoding schemes. This is a key interoperability issue and is implied in the current specification.DIS RADIONote that some functional blocks have been omitted for illustration.
