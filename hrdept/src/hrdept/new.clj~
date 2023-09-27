@@ -1,0 +1,26 @@
+
+(ns hrdept.core
+  (:require [neo4j-clj.core :as db])
+  (:import (java.net URI))
+  (:gen-class))
+
+(def local-db
+  (db/connect (URI. "bolt://localhost:7687")
+              "neo4j"
+              "neo4j851"))
+
+
+
+(db/defquery load-with-header
+  "LOAD CSV from 'file:///data.csv' as row return row")
+
+(defn load-head []
+  (with-open [session (db/get-session local-db)]
+    (load-with-header session)))
+
+(db/defquery show-me
+  "match (n) return n")
+
+(defn show-em []
+  (with-open [session (db/get-session local-db)]
+    (show-me session)))
