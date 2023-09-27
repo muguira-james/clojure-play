@@ -11,7 +11,7 @@
 (def local-db
   (db/connect (URI. "bolt://localhost:7687")
               "neo4j"
-              "Neo4j851"))
+              "neo4j"))
 
 (db/defquery create-cost-center
   "CREATE (c:costcenter {CODE: $cc})")
